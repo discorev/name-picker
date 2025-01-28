@@ -1,101 +1,108 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+
+export default function NameFromHat() {
+  const router = useRouter()
+  const [names, setNames] = useState<string[]>([])
+  const [pulledName, setPulledName] = useState<string | null>(null)
+  const [isAnimating, setIsAnimating] = useState(false)
+
+  useEffect(() => {
+    const storedNames = JSON.parse(localStorage.getItem("names") ?? "null")
+    console.log("names %s", storedNames)
+    if (storedNames === null || storedNames.length === 0) {
+      console.log("redirecting to settings")
+      router.push('/settings')
+    } else {
+      setNames(storedNames)
+    }
+  }, [])
+
+  const pullName = () => {
+    if (names.length === 0) {
+      alert("All names have been pulled!")
+      return
+    }
+
+    setPulledName("")
+    setIsAnimating(true)
+    setTimeout(() => {
+      const randomIndex = Math.floor(Math.random() * names.length)
+      const name = names[randomIndex]
+      setPulledName(name)
+      const updatedNames = names.filter((_, index) => index !== randomIndex)
+      setNames(updatedNames)
+      localStorage.setItem("names", JSON.stringify(updatedNames))
+    }, 2000) // Animation duration
+  }
+
+  useEffect(() => {
+    if (!isAnimating) return
+    const timer = setTimeout(() => {
+      setIsAnimating(false)
+    }, 3000) // Total animation duration
+    return () => clearTimeout(timer)
+  }, [isAnimating])
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen bg-gradient-to-b from-purple-100 to-pink-100 flex flex-col items-center justify-center p-4">
+      <div className="flex items-center justify-center mb-8 w-full max-w-2xl">
+        <div className="relative mr-8">
+          <svg
+            width="200"
+            height="200"
+            className={`hat ${isAnimating ? "animate-hat-shake" : ""}`}
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <ellipse cx="100" cy="110" rx="40" ry="20" fill="black" />
+            <rect x="60" y="50" width="80" height="60" fill="black" />
+            <ellipse cx="100" cy="50" rx="80" ry="20" fill="black" />
+          </svg>
+          {isAnimating && (
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-[-10%] bg-yellow-200 px-4 py-2 rounded-full shadow-lg animate-pull-name">
+              <span className="animate-text-reveal">{pulledName}</span>
+            </div>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <div className="flex flex-col items-center">
+          {pulledName && !isAnimating && (
+            <div className="bg-green-200 px-4 py-2 rounded shadow-lg animate-pop text-center">
+              <div className="font-semibold mb-1">Selected:</div>
+              <div className="text-xl">{pulledName}</div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div>
+          <Button
+            onClick={pullName}
+            disabled={isAnimating || names.length === 0}
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded mb-4"
+          >
+            Pull a Name
+          </Button>
+      </div>
+
+      <div className="mt-8 text-center">
+        <h2 className="text-xl font-semibold mb-2 text-purple-800">Remaining Names:</h2>
+        <ul className="list-disc list-inside text-purple-600">
+          {names.map((name) => (
+            <li key={name}>{name}</li>
+          ))}
+        </ul>
+      </div>
+      <div className="mt-4">
+        <Link href="/settings" className="text-purple-600 hover:underline">
+          Manage Names
+        </Link>
+      </div>
     </div>
-  );
+  )
 }
+

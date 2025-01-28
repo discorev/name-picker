@@ -16,12 +16,21 @@ export default function SettingsPage() {
     }
   }, [])
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      addName()
+    }
+  }
+
   const addName = () => {
     if (newName.trim()) {
       const updatedNames = [...names, newName.trim()]
       setNames(updatedNames)
       localStorage.setItem("names", JSON.stringify(updatedNames))
       setNewName("")
+      // Keep focus on the input
+      document.getElementById("nameInput")?.focus()
     }
   }
 
@@ -38,9 +47,11 @@ export default function SettingsPage() {
 
         <div className="flex mb-4">
           <Input
+            id="nameInput"
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Enter a name"
             className="flex-grow mr-2"
           />
@@ -62,7 +73,9 @@ export default function SettingsPage() {
           <Link href="/" className="text-purple-600 hover:underline">
             Save
           </Link>
-        ) : <></>}
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   )

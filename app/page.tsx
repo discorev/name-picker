@@ -61,6 +61,7 @@ export default function NameFromHat() {
             <ellipse cx="100" cy="110" rx="40" ry="20" fill="black" />
             <rect x="60" y="50" width="80" height="60" fill="black" />
             <ellipse cx="100" cy="50" rx="80" ry="20" fill="black" />
+            <ellipse cx="100" cy="50" rx="40" ry="10" fill="grey" />
           </svg>
           {isAnimating && (
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-[-10%] bg-yellow-200 px-4 py-2 rounded-full shadow-lg animate-pull-name">

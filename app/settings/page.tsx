@@ -1,25 +1,35 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function SettingsPage() {
+  const router = useRouter()
   const [names, setNames] = useState<string[]>([])
   const [newName, setNewName] = useState("")
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const storedNames = localStorage.getItem("names")
     if (storedNames) {
       setNames(JSON.parse(storedNames))
     }
+    // Focus the input element when the component mounts
+    inputRef.current?.focus()
   }, [])
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault()
       addName()
+    }
+
+    if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+      e.preventDefault()
+      router.push('/')
     }
   }
 
@@ -47,6 +57,7 @@ export default function SettingsPage() {
 
         <div className="flex mb-4">
           <Input
+            ref={inputRef}
             id="nameInput"
             type="text"
             value={newName}
